@@ -1,0 +1,341 @@
+:root {
+  --bg: #0b0f14;
+  --felt: #114d2d;      /* dunkles Grün */
+  --felt-2: #0f3e25;    /* Verlauf */
+  --border: #0a2b1b;
+  --red: #c82333;
+  --black: #1b1f23;
+  --green: #2e8b57;
+  --ink: #e9eef2;
+  --ink-dim: #c9d4dc;
+  --accent: #ffd166;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: radial-gradient(circle at 30% 20%, #0f1a22, var(--bg) 60%);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 16px;
+}
+
+h1 { margin: 0 0 16px; letter-spacing: .4px; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 860px;
+  gap: 16px;
+  align-items: start;
+}
+
+.table {
+  position: relative;
+  display: grid;
+  /* 0-Spalte + 3 Nummernspalten */
+  grid-template-columns: 110px repeat(3, 90px);
+  grid-auto-rows: 64px;
+  background: linear-gradient(135deg, var(--felt), var(--felt-2));
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  gap: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+}
+
+/* Zero belegt die volle Höhe der 12 Reihen */
+.zero-cell {
+  grid-row: 1 / span 12;
+  grid-column: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: radial-gradient(circle at 30% 25%, #36b27a, var(--green));
+  color: #022612;
+  font-weight: 700;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid #0c3a26;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 2px 10px rgba(0,0,0,.3);
+  transition: transform .06s ease, box-shadow .06s ease;
+}
+.zero-cell:active { transform: translateY(1px) scale(.99); }
+
+.cell {
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  font-size: 22px;
+  cursor: pointer;
+  user-select: none;
+  border: 2px solid rgba(255,255,255,.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 2px 8px rgba(0,0,0,.25);
+  transition: transform .06s ease, box-shadow .06s ease, outline .06s ease;
+  outline: 2px solid transparent;
+}
+.cell.red   { background: radial-gradient(circle at 30% 20%, #ff4d5e, var(--red)); }
+.cell.black { background: radial-gradient(circle at 30% 20%, #2b333b, var(--black)); }
+
+.cell:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 14px rgba(0,0,0,.35); }
+.cell:active { transform: translateY(1px) scale(.99); }
+
+.cell.selected {
+  outline: 2px solid var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 209, 102, .35), inset 0 1px 0 rgba(255,255,255,.25);
+}
+
+.panel {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 14px;
+  padding: 12px 14px;
+  backdrop-filter: blur(4px);
+}
+.panel h2 { margin: 6px 0 10px; font-size: 16px; color: var(--ink-dim); }
+.panel ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px; height: 36px;
+  border-radius: 999px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+}
+.badge.red   { background: var(--red); }
+.badge.black { background: var(--black); }
+.badge.green { background: var(--green); }
+
+.clear-btn {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  color: var(--ink);
+  cursor: pointer;
+}
+.clear-btn:hover { background: rgba(255,255,255,.1); }
+
+footer { margin-top: 10px; color: var(--ink-dim); }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin: 8px 0 14px; }
+.tab {
+  padding: 8px 12px; border-radius: 10px;
+  background: rgba(255,255,255,.06); color: var(--ink);
+  border: 1px solid rgba(255,255,255,.1); cursor: pointer;
+}
+.tab.active { background: rgba(255,255,255,.12); }
+
+/* Wheel */
+.wheel-wrap {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.02), transparent 60%);
+  border-radius: 16px;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.wheel-segment {
+  stroke: rgba(255,255,255,.08);
+  stroke-width: 1.25;
+  cursor: pointer;
+  transition: filter .08s ease, transform .08s ease;
+}
+.wheel-segment.red   { fill: #c82333; }
+.wheel-segment.black { fill: #1b1f23; }
+.wheel-segment.green { fill: #2e8b57; }
+
+.wheel-segment:hover {
+  filter: brightness(1.08);
+}
+
+.wheel-segment.sel {
+  outline: none;
+  stroke: var(--accent);
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 6px rgba(255,209,102,.45));
+}
+
+.wheel-divider {
+  stroke: rgba(255,255,255,.12);
+  stroke-width: 0.75;
+  fill: none;
+}
+
+.wheel-ring {
+  stroke: rgba(255,255,255,.15);
+}
+
+.wheel-zero-ring {
+  stroke: rgba(46,139,87,.25);
+  stroke-width: 3;
+  pointer-events: none;
+}
+
+.wheel-label {
+  fill: #ffffff;
+  pointer-events: none;
+  user-select: none;
+}
+.wheel-label-dark {
+  fill: #062a18; /* dunkler Text auf Grün */
+  pointer-events: none;
+  user-select: none;
+}
+.panel ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  gap: 8px;
+}
+.panel li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.undo-btn, .clear-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  color: var(--ink);
+  cursor: pointer;
+}
+.undo-btn:hover { background: rgba(255,255,255,.12); }
+
+/* Controls (Einsatz/Kapital + Checkboxen) */
+.controls {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 8px 0 12px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  min-width: 140px;
+}
+.field label {
+  font-size: 12px;
+  color: var(--ink-dim);
+}
+.field input[type="number"] {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: var(--ink);
+  width: 140px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.checks {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.hint.small {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ink-dim);
+}
+
+/* Abstand unter der Zahlenzeile, damit nichts darüberlappt */
+.chip-list { margin-bottom: 10px; max-width: 100%; }
+
+/* System-Tabelle */
+.sys { margin-top: 14px; }
+.sys h3 { margin: 12px 0 8px; font-size: 14px; color: var(--ink-dim); }
+
+.sys-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;      /* verhindert wildes Springen */
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  overflow: hidden;         /* für den Radius */
+  font-size: 14px;
+}
+.sys-table th, .sys-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sys-table thead th {
+  color: var(--ink-dim);
+  font-weight: 600;
+}
+.sys-table tr:last-child td { border-bottom: none; }
+.sys-table .num { text-align: right; }
+
+/* Status-Badge */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  font-size: 12px;
+}
+.tag.dim { opacity: .8; }
+
+/* Mehr Luft unter der Zahlenzeile */
+.chip-list { margin-bottom: 12px; }
+
+.saldo {
+  margin-top: 12px;
+  font-size: 15px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+}
