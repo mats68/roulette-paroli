@@ -2,23 +2,16 @@ import { useMemo, useState } from "react";
 import RouletteBoard from "./components/RouletteBoard";
 import RouletteWheel from "./components/RouletteWheel";
 
-import {
-  calcSimpleChanceResult,
-  numberColor,
-  SIMPLE_CHANCE_PREDICATE,
-  nextBetForSimpleChance,
-  calcParoliSaldo,
-} from "./roulette";
-
+import { calcSimpleChanceResult, numberColor, SIMPLE_CHANCE_PREDICATE, nextBetForSimpleChance, calcParoliSaldo } from "./roulette";
 
 type View = "board" | "wheel";
 type SimpleChances = {
-  black: boolean;
-  red: boolean;
+  low: boolean; // 1–18
   even: boolean;
+  red: boolean;
+  black: boolean;
   odd: boolean;
   high: boolean; // 19–36
-  low: boolean; // 1–18
 };
 
 export default function App() {
@@ -32,12 +25,12 @@ export default function App() {
 
   // Einfache Chancen: Standard aktiv: Schwarz, Gerade, 19–36
   const [chances, setChances] = useState<SimpleChances>({
-    black: true,
-    red: false,
+    low: false,
     even: true,
+    red: false,
+    black: true,
     odd: false,
     high: true,
-    low: false,
   });
 
   // Klick auf Board/Wheel fügt eine neue geworfene Zahl hinzu
@@ -62,12 +55,12 @@ export default function App() {
     }> = [];
 
     const labels: Record<keyof SimpleChances, string> = {
-      black: "Schwarz",
-      red: "Rot",
+      low: "1–18",
       even: "Gerade",
+      red: "Rot",
+      black: "Schwarz",
       odd: "Ungerade",
       high: "19–36",
-      low: "1–18",
     };
 
     (Object.keys(chances) as (keyof SimpleChances)[]).forEach((key) => {
@@ -79,22 +72,18 @@ export default function App() {
     return result;
   }, [chances, throws, einsatz]);
 
-// aktive einfachen Chancen sammeln
-const activeChanceKeys = useMemo(
-  () => (Object.keys(chances) as (keyof SimpleChances)[]).filter((k) => chances[k]),
-  [chances]
-);
+  // aktive einfachen Chancen sammeln
+  const activeChanceKeys = useMemo(() => (Object.keys(chances) as (keyof SimpleChances)[]).filter((k) => chances[k]), [chances]);
 
-// Nettogewinn laut Paroli-System über alle Würfe + Startkapital
-const saldo = useMemo(() => {
-  const profit = calcParoliSaldo(
-    throws,
-    einsatz,
-    activeChanceKeys as any // gleiche Keys wie SimpleChanceKey
-  );
-  return kapital + profit;
-}, [throws, einsatz, kapital, activeChanceKeys]);
-
+  // Nettogewinn laut Paroli-System über alle Würfe + Startkapital
+  const saldo = useMemo(() => {
+    const profit = calcParoliSaldo(
+      throws,
+      einsatz,
+      activeChanceKeys as any // gleiche Keys wie SimpleChanceKey
+    );
+    return kapital + profit;
+  }, [throws, einsatz, kapital, activeChanceKeys]);
 
   return (
     <div className="app">
@@ -130,24 +119,24 @@ const saldo = useMemo(() => {
 
           <div className="checks">
             <label className="check">
-              <input type="checkbox" checked={chances.black} onChange={() => toggleChance("black")} />
-              <span>Schwarz</span>
-            </label>
-            <label className="check">
-              <input type="checkbox" checked={chances.red} onChange={() => toggleChance("red")} />
-              <span>Rot</span>
+              <input type="checkbox" checked={chances.low} onChange={() => toggleChance("low")} />
+              <span>1–18</span>
             </label>
             <label className="check">
               <input type="checkbox" checked={chances.even} onChange={() => toggleChance("even")} />
               <span>Gerade</span>
             </label>
             <label className="check">
-              <input type="checkbox" checked={chances.odd} onChange={() => toggleChance("odd")} />
-              <span>Ungerade</span>
+              <input type="checkbox" checked={chances.red} onChange={() => toggleChance("red")} />
+              <span>Rot</span>
             </label>
             <label className="check">
-              <input type="checkbox" checked={chances.low} onChange={() => toggleChance("low")} />
-              <span>1–18</span>
+              <input type="checkbox" checked={chances.black} onChange={() => toggleChance("black")} />
+              <span>Schwarz</span>
+            </label>
+            <label className="check">
+              <input type="checkbox" checked={chances.odd} onChange={() => toggleChance("odd")} />
+              <span>Ungerade</span>
             </label>
             <label className="check">
               <input type="checkbox" checked={chances.high} onChange={() => toggleChance("high")} />
@@ -247,7 +236,6 @@ const saldo = useMemo(() => {
           <div className="saldo">
             Aktueller Saldo: <strong>{saldo}</strong>
           </div>
-
         </aside>
       </div>
 

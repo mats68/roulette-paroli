@@ -38,11 +38,11 @@ export function isLow(n: number)   { return n >= 1 && n <= 18; }
 export function isHigh(n: number)  { return n >= 19 && n <= 36; }
 
 export const SIMPLE_CHANCE_PREDICATE: Record<SimpleChanceKey, (n: number) => boolean> = {
-  black: isBlack,
-  red: isRed,
-  even: isEven,
-  odd: isOdd,
   low: isLow,
+  odd: isOdd,
+  red: isRed,
+  black: isBlack,
+  even: isEven,
   high: isHigh,
 };
 
