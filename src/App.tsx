@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RouletteBoard from "./components/RouletteBoard";
 import RouletteWheel from "./components/RouletteWheel";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
-import { calcSimpleChanceResult, numberColor, SIMPLE_CHANCE_PREDICATE, nextBetForSimpleChance, calcParoliSaldo } from "./roulette";
+import { numberColor, SIMPLE_CHANCE_PREDICATE, nextBetForSimpleChance, calcParoliSaldo } from "./roulette";
 
 type View = "board" | "wheel";
 type SimpleChances = {
@@ -20,8 +21,8 @@ export default function App() {
   const [view, setView] = useState<View>("board");
 
   // Einsatz/Kapital
-  const [einsatz, setEinsatz] = useState<number>(10);
-  const [kapital, setKapital] = useState<number>(1000);
+const [einsatz, setEinsatz] = useLocalStorage<number>("einsatz", 10);
+const [kapital, setKapital] = useLocalStorage<number>("saldo", 1000);
 
   // Einfache Chancen: Standard aktiv: Schwarz, Gerade, 19–36
   const [chances, setChances] = useState<SimpleChances>({
@@ -76,14 +77,23 @@ export default function App() {
   const activeChanceKeys = useMemo(() => (Object.keys(chances) as (keyof SimpleChances)[]).filter((k) => chances[k]), [chances]);
 
   // Nettogewinn laut Paroli-System über alle Würfe + Startkapital
-  const saldo = useMemo(() => {
-    const profit = calcParoliSaldo(
-      throws,
-      einsatz,
-      activeChanceKeys as any // gleiche Keys wie SimpleChanceKey
-    );
-    return kapital + profit;
-  }, [throws, einsatz, kapital, activeChanceKeys]);
+  // const saldo = useMemo(() => {
+  //   const profit = calcParoliSaldo(
+  //     throws,
+  //     einsatz,
+  //     activeChanceKeys as any // gleiche Keys wie SimpleChanceKey
+  //   );
+  //   return kapital + profit;
+  // }, [throws, einsatz, kapital, activeChanceKeys]);
+
+  // PERSISTENT: aktueller Saldo
+  const [saldo, setSaldo] = useLocalStorage<number>("saldo", kapital);
+
+// Saldo immer aktuell halten (und damit automatisch speichern)
+  useEffect(() => {
+    const profit = calcParoliSaldo(throws, einsatz, activeChanceKeys as any);
+    setSaldo(kapital + profit);
+  }, [throws, einsatz, kapital, activeChanceKeys, setSaldo]);
 
   return (
     <div className="app">
