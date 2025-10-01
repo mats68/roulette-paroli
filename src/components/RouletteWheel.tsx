@@ -16,7 +16,7 @@ type Segment = {
   labelPos: { x: number; y: number };
 };
 
-const TAU = Math.PI * 2;
+// const TAU = Math.PI * 2;
 
 /** Hilfsfunktionen für Kreisbögen */
 function polar(cx: number, cy: number, r: number, angleRad: number) {
